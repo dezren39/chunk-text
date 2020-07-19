@@ -1,6 +1,6 @@
-import chunk from '../index';
+import chunk from '../index.js';
 
-it('should throw an error if no text is provided or invalid type.', () => {
+it("should throw if 'text' is missing or type or value is invalid.", () => {
   expect(() => {
     chunk();
   }).toThrow(
@@ -8,19 +8,136 @@ it('should throw an error if no text is provided or invalid type.', () => {
   );
 });
 
-it('should throw an error if no size is provided or invalid type.', () => {
+it("should throw if 'size' is missing or type or value is invalid.", () => {
   expect(() => {
     chunk('hello world');
   }).toThrow(
     new TypeError(
-      'Size should be provided as 2nd argument and be a number greater than zero.'
+      'Size should be provided as 2nd argument and parseInt to a value greater than zero.'
     )
   );
   expect(() => {
     chunk('hello world', 0);
   }).toThrow(
     new TypeError(
-      'Size should be provided as 2nd argument and be a number greater than zero.'
+      'Size should be provided as 2nd argument and parseInt to a value greater than zero.'
+    )
+  );
+});
+
+it("should throw if 'type' type or value is invalid.", () => {
+  expect(() => {
+    chunk('hello world', 1, 'one');
+  }).toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, -1.001);
+  }).toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, -1);
+  }).toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, 3);
+  }).not.toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, '3');
+  }).not.toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+});
+it("should not throw if 'type' type and value are missing or valid.", () => {
+  expect(() => {
+    chunk('hello world', 1, '');
+  }).not.toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, null);
+  }).not.toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, undefined);
+  }).not.toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1);
+  }).not.toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, -0.001);
+  }).not.toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, 0.0);
+  }).not.toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, 1.0);
+  }).not.toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, new Number.BigInt(2.0));
+  }).not.toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, 2.999);
+  }).not.toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, '2.99999 years');
+  }).not.toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, '2');
+  }).not.toThrow(
+    new TypeError(
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
     )
   );
 });
@@ -50,7 +167,6 @@ it('should count double width characters as single characters', () => {
   expect(chunk(camembert, 4)).toEqual(['🧀🧀🧀🧀', '🧀🧀🧀🧀']);
 });
 
-// this test does not pass yet
 it('should not cut combined characters', () => {
   // one woman runner emoji with a colour is seven bytes, or five characters
   // RUNNER(2) + COLOUR(2) + ZJW + GENDER + VS15
