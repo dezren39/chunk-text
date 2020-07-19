@@ -167,55 +167,243 @@ it('should truncate a word if longer than size', () => {
 
 it('should count double width characters as single characters by default', () => {
   // each of these characters is two bytes
-  const chineseText = '𤻪𬜬𬜯';
-  const camembert = '🧀🧀🧀🧀 🧀🧀🧀🧀';
+  const chineseTextA = '𤻪';
+  const chineseTextB = '𬜬';
+  const chineseTextC = '𬜯';
+  const chineseText = chineseTextA + chineseTextB + chineseTextC;
+  const fourCheese = '🧀🧀🧀🧀';
+  const camembert = `${fourCheese} ${fourCheese}`;
 
-  expect(chunk(chineseText, 2)).toEqual(['𤻪𬜬', '𬜯']);
-  expect(chunk(chineseText, 1)).toEqual(['𤻪', '𬜬', '𬜯']);
-  expect(chunk(camembert, 4)).toEqual(['🧀🧀🧀🧀', '🧀🧀🧀🧀']);
+  expect(chunk(chineseText, 2)).toEqual([
+    chineseTextA + chineseTextB,
+    chineseTextC,
+  ]);
+  expect(chunk(chineseText, 1)).toEqual([
+    chineseTextA,
+    chineseTextB,
+    chineseTextC,
+  ]);
+  expect(chunk(camembert, 4)).toEqual([fourCheese, fourCheese]);
 });
 
-it('should count all characters as single characters using chunkType -1 value', () => {
+it('should count all characters as single characters using chunkType -1 or 1 values', () => {
+  // each of these characters is two bytes
+  const chineseTextA = '𤻪';
+  const chineseTextB = '𬜬';
+  const chineseTextC = '𬜯';
+  const chineseText = chineseTextA + chineseTextB + chineseTextC;
+  const fourCheese = '🧀🧀🧀🧀';
+  const camembert = `${fourCheese} ${fourCheese}`;
+
+  expect(chunk(chineseText, 2, -1)).toEqual([
+    chineseTextA + chineseTextB,
+    chineseTextC,
+  ]);
+  expect(chunk(chineseText, 1, -1)).toEqual([
+    chineseTextA,
+    chineseTextB,
+    chineseTextC,
+  ]);
+  expect(chunk(camembert, 4, -1)).toEqual([fourCheese, fourCheese]);
+  expect(chunk(chineseText, 2, 1)).toEqual([
+    chineseTextA + chineseTextB,
+    chineseTextC,
+  ]);
+  expect(chunk(chineseText, 1, 1)).toEqual([
+    chineseTextA,
+    chineseTextB,
+    chineseTextC,
+  ]);
+  expect(chunk(camembert, 4, 1)).toEqual([fourCheese, fourCheese]);
+
+  // The Woman Running emoji is a ZWJ sequence combining 🏃 Person Running, ‍ Zero Width Joiner and ♀ Female Sign.
+  // each of these characters is five bytes
+  const womanRunningZWJ = '🏃‍♀️';
+  const womenRunningZWJ = `${womanRunningZWJ +
+    womanRunningZWJ +
+    womanRunningZWJ +
+    womanRunningZWJ} ${womanRunningZWJ + womanRunningZWJ}`;
+  expect(chunk(womenRunningZWJ, 2, -1)).toEqual([
+    womanRunningZWJ + womanRunningZWJ,
+    womanRunningZWJ + womanRunningZWJ,
+    womanRunningZWJ + womanRunningZWJ,
+  ]);
+  expect(chunk(womenRunningZWJ, 2, 1)).toEqual([
+    womanRunningZWJ + womanRunningZWJ,
+    womanRunningZWJ + womanRunningZWJ,
+    womanRunningZWJ + womanRunningZWJ,
+  ]);
+});
+
+it('should count characters as bytes using chunkType value 0', () => {
+  // each of these characters is two bytes
+  const chineseTextA = '𤻪';
+  const chineseTextB = '𬜬';
+  const chineseTextC = '𬜯';
+  const chineseText = chineseTextA + chineseTextB + chineseTextC;
+  const twoCheese = '🧀🧀';
+  const camembert = `${twoCheese + twoCheese} ${twoCheese + twoCheese}`;
+
+  expect(chunk(chineseText, 2, 0)).toEqual([
+    chineseTextA,
+    chineseTextB,
+    chineseTextC,
+  ]);
+  expect(chunk(chineseText, 1, 0)).toEqual([
+    chineseTextA,
+    chineseTextB,
+    chineseTextC,
+  ]);
+  expect(chunk(camembert, 4, 0)).toEqual([
+    twoCheese,
+    twoCheese,
+    twoCheese,
+    twoCheese,
+  ]);
+});
+
+it('should count single width characters the same with all chunkType values', () => {
+  for (let i = 0; i < 100; i++) {
+    expect(chunk('hello you', 4, i)).toEqual(['hell', 'o', 'you']);
+  }
+});
+
+it('should count characters as bytes up to maximum N chunkType value > 0', () => {
+  // each of these characters is two bytes
+  const chineseTextA = '𤻪';
+  const chineseTextB = '𬜬';
+  const chineseTextC = '𬜯';
+  const chineseText = chineseTextA + chineseTextB + chineseTextC;
+  const twoCheese = '🧀🧀';
+  const camembert = `${twoCheese + twoCheese} ${twoCheese + twoCheese}`;
+
+  expect(chunk(chineseText, 2, 2)).toEqual([
+    chineseTextA,
+    chineseTextB,
+    chineseTextC,
+  ]);
+  expect(chunk(chineseText, 1, 2)).toEqual([
+    chineseTextA,
+    chineseTextB,
+    chineseTextC,
+  ]);
+  expect(chunk(camembert, 4, 2)).toEqual([
+    twoCheese,
+    twoCheese,
+    twoCheese,
+    twoCheese,
+  ]);
+  expect(chunk(chineseText, 2, 4)).toEqual([
+    chineseTextA,
+    chineseTextB,
+    chineseTextC,
+  ]);
+  expect(chunk(chineseText, 1, 4)).toEqual([
+    chineseTextA,
+    chineseTextB,
+    chineseTextC,
+  ]);
+  expect(chunk(camembert, 4, 4)).toEqual([
+    twoCheese,
+    twoCheese,
+    twoCheese,
+    twoCheese,
+  ]);
+
+  // The Woman Running emoji is a ZWJ sequence combining 🏃 Person Running, ‍ Zero Width Joiner and ♀ Female Sign.
+  // each of these characters is five bytes
+  const womanRunningZWJ = '🏃‍♀️';
+  const womenRunningZWJ = `${womanRunningZWJ +
+    womanRunningZWJ +
+    womanRunningZWJ +
+    womanRunningZWJ} ${womanRunningZWJ + womanRunningZWJ}`;
+  expect(chunk(womenRunningZWJ, 2, 0)).toEqual([
+    womanRunningZWJ,
+    womanRunningZWJ,
+    womanRunningZWJ,
+    womanRunningZWJ,
+    womanRunningZWJ,
+    womanRunningZWJ,
+  ]);
+  for (let i = 2; i < 100; i++) {
+    expect(chunk(womenRunningZWJ, 2, i)).toEqual([
+      womanRunningZWJ,
+      womanRunningZWJ,
+      womanRunningZWJ,
+      womanRunningZWJ,
+      womanRunningZWJ,
+      womanRunningZWJ,
+    ]);
+  }
+
+  for (let i = 0; i < 100; i++) {
+    expect(chunk(womenRunningZWJ, 4, 1)).toEqual([
+      womanRunningZWJ + womanRunningZWJ + womanRunningZWJ + womanRunningZWJ,
+      womanRunningZWJ + womanRunningZWJ,
+    ]);
+  }
+});
+
+it('should count N-byte characters with chunkType value 0 the same as chunkType value N', () => {
   // each of these characters is two bytes
   const chineseText = '𤻪𬜬𬜯';
   const camembert = '🧀🧀🧀🧀 🧀🧀🧀🧀';
 
-  expect(chunk(chineseText, 2, -1)).toEqual(['𤻪𬜬', '𬜯']);
-  expect(chunk(chineseText, 1, -1)).toEqual(['𤻪', '𬜬', '𬜯']);
-  expect(chunk(camembert, 4, -1)).toEqual(['🧀🧀🧀🧀', '🧀🧀🧀🧀']);
+  expect(chunk(chineseText, 2, 2)).toEqual(chunk(chineseText, 2, 0));
+  expect(chunk(chineseText, 1, 2)).toEqual(chunk(chineseText, 1, 0));
+  expect(chunk(camembert, 4, 2)).toEqual(chunk(camembert, 4, 0));
+
+  // The Woman Running emoji is a ZWJ sequence combining 🏃 Person Running, ‍ Zero Width Joiner and ♀ Female Sign.
+  // each of these characters is five bytes
+  const womanRunningZWJ = '🏃‍♀️';
+  const womenRunningZWJ = `${womanRunningZWJ +
+    womanRunningZWJ +
+    womanRunningZWJ +
+    womanRunningZWJ} ${womanRunningZWJ + womanRunningZWJ}`;
+  expect(chunk(womenRunningZWJ, 2, 0)).toEqual(chunk(womenRunningZWJ, 2, 5));
+
+  // one woman runner emoji with a colour is seven bytes, or five characters
+  // RUNNER(2) + COLOUR(2) + ZJW + GENDER + VS15
+  const runner = '🏃🏽‍♀️';
+  const runners = runner + runner + runner;
+  expect(chunk(runners, 2, 0)).toEqual(chunk(runners, 2, 7));
 });
 
-it('should count characters as bytes using chunkType 0 value', () => {
+it('should count default chunkType the same as chunkType value -1', () => {
   // each of these characters is two bytes
   const chineseText = '𤻪𬜬𬜯';
   const camembert = '🧀🧀🧀🧀 🧀🧀🧀🧀';
 
-  expect(chunk(chineseText, 2, 0)).toEqual(['𤻪', '𬜬', '𬜯']);
-  expect(chunk(chineseText, 1, 0)).toEqual(['𤻪', '𬜬', '𬜯']);
-  expect(chunk(camembert, 4, 0)).toEqual(['🧀🧀', '🧀🧀', '🧀🧀', '🧀🧀']);
-});
+  expect(chunk(chineseText, 2)).toEqual(chunk(chineseText, 2, -1));
+  expect(chunk(chineseText, 1)).toEqual(chunk(chineseText, 1, -1));
+  expect(chunk(camembert, 4)).toEqual(chunk(camembert, 4, -1));
 
-it('should count characters as bytes up to maximum N chunkType value > 1', () => {
-  // each of these characters is two bytes
-  const chineseText = '𤻪𬜬𬜯';
-  const camembert = '🧀🧀🧀🧀 🧀🧀🧀🧀';
+  // The Woman Running emoji is a ZWJ sequence combining 🏃 Person Running, ‍ Zero Width Joiner and ♀ Female Sign.
+  // each of these characters is five bytes
+  const womanRunningZWJ = '🏃‍♀️';
+  const womenRunningZWJ = `${womanRunningZWJ +
+    womanRunningZWJ +
+    womanRunningZWJ +
+    womanRunningZWJ} ${womanRunningZWJ + womanRunningZWJ}`;
+  expect(chunk(womenRunningZWJ, 2)).toEqual(chunk(womenRunningZWJ, 2, -1));
 
-  expect(chunk(chineseText, 2, 2)).toEqual(['𤻪', '𬜬', '𬜯']);
-  expect(chunk(chineseText, 1, 2)).toEqual(['𤻪', '𬜬', '𬜯']);
-  expect(chunk(camembert, 4, 2)).toEqual(['🧀🧀', '🧀🧀', '🧀🧀', '🧀🧀']);
-  expect(chunk(chineseText, 2, 4)).toEqual(['𤻪', '𬜬', '𬜯']);
-  expect(chunk(chineseText, 1, 4)).toEqual(['𤻪', '𬜬', '𬜯']);
-  expect(chunk(camembert, 4, 4)).toEqual(['🧀🧀', '🧀🧀', '🧀🧀', '🧀🧀']);
+  // one woman runner emoji with a colour is seven bytes, or five characters
+  // RUNNER(2) + COLOUR(2) + ZJW + GENDER + VS15
+  const runner = '🏃🏽‍♀️';
+  const runners = runner + runner + runner;
+  expect(chunk(runners, 2)).toEqual(chunk(runners, 2, -1));
 });
 
 it('should not cut combined characters', () => {
   // one woman runner emoji with a colour is seven bytes, or five characters
   // RUNNER(2) + COLOUR(2) + ZJW + GENDER + VS15
-  const runners = '🏃🏽‍♀️🏃🏽‍♀️🏃🏽‍♀️';
+  const runner = '🏃🏽‍♀️';
+  const runners = runner + runner + runner;
   // FLAG + RAINBOW
-  const flags = '🏳️‍🌈🏳️‍🌈';
+  const flag = '🏳️‍🌈';
+  const flags = flag + flag;
 
-  expect(chunk(runners, 3)).toEqual(['🏃🏽‍♀️🏃🏽‍♀️🏃🏽‍♀️']);
-  expect(chunk(runners, 1)).toEqual(['🏃🏽‍♀️', '🏃🏽‍♀️', '🏃🏽‍♀️']);
-  expect(chunk(flags, 1)).toEqual(['🏳️‍🌈', '🏳️‍🌈']);
+  expect(chunk(runners, 3)).toEqual([runners]);
+  expect(chunk(runners, 1)).toEqual([runner, runner, runner]);
+  expect(chunk(flags, 1)).toEqual([flag, flag]);
 });
