@@ -21,10 +21,10 @@ const assertIsValidChunkType = (chunkType, chunkTypeInt) => {
     typeof chunkType !== 'undefined' &&
     chunkType !== null &&
     chunkType !== '' &&
-    (Number.isNaN(chunkTypeInt) || Number.parseInt(chunkTypeInt, 10) < 0)
+    (Number.isNaN(chunkTypeInt) || Number.parseInt(chunkTypeInt, 10) < -1)
   ) {
     throw new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= zero.'
+      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
     );
   }
 };
@@ -100,7 +100,7 @@ export default (text, chunkSize, chunkType) => {
   assertIsValidChunkSize(chunkSizeInt);
   const chunkTypeParseInt = Number.parseInt(chunkType, 10);
   assertIsValidChunkType(chunkType, chunkTypeParseInt);
-  const chunkTypeInt = Number.isNaN(chunkTypeParseInt) ? 1 : chunkTypeParseInt;
+  const chunkTypeInt = Number.isNaN(chunkTypeParseInt) ? -1 : chunkTypeParseInt;
   const chunks = [];
   let characters = runes(text);
   while (chunkLength(characters, chunkTypeInt) > chunkSizeInt) {

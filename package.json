@@ -48,6 +48,7 @@
     "eslint-plugin-import": "^2.3.0",
     "eslint-plugin-jest": "^20.0.3",
     "eslint-plugin-prettier": "^2.1.2",
+    "fast-text-encoding": "^1.0.3",
     "jest": "^26.1.0",
     "prettier": "^1.4.4"
   },
