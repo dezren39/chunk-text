@@ -34,7 +34,7 @@ const assertIsValidChunkType = function(
   }
 };
 
-const chunkLength = function(characters, chunkType) {
+const chunkLength = function(characters, chunkType, textEncoder) {
   let length;
   if (
     typeof characters === 'undefined' ||
@@ -58,11 +58,11 @@ const chunkLength = function(characters, chunkType) {
       length = -1;
     } else if (chunkType === 0) {
       length = charactersArray
-        .map(character => new TextEncoder().encode(character).length)
+        .map(character => textEncoder.encode(character).length)
         .reduce((accumulator, currentValue) => accumulator + currentValue);
     } else if (chunkType > 0) {
       const arrayLength = charactersArray
-        .map(character => new TextEncoder().encode(character).length)
+        .map(character => textEncoder.encode(character).length)
         .reduce(
           (accumulator, currentValue) =>
             accumulator + (currentValue > chunkType ? chunkType : currentValue)
@@ -76,7 +76,7 @@ const chunkLength = function(characters, chunkType) {
   return length;
 };
 
-const chunkIndexOf = function(characters, chunkSize, chunkType) {
+const chunkIndexOf = function(characters, chunkSize, chunkType, textEncoder) {
   let splitAt = characters.lastIndexOf(' ', chunkSize);
   if (splitAt > -2 && splitAt < 1) {
     splitAt = chunkSize;
@@ -86,7 +86,8 @@ const chunkIndexOf = function(characters, chunkSize, chunkType) {
   }
   while (
     splitAt > 0 &&
-    chunkSize < chunkLength(characters.slice(0, splitAt), chunkType)
+    chunkSize <
+      chunkLength(characters.slice(0, splitAt), chunkType, textEncoder)
   ) {
     splitAt = splitAt - 1;
   }
@@ -113,8 +114,14 @@ export default function(text, chunkSize, chunkType) {
   const chunkTypeInt = chunkTypeParseIntNaN ? -1 : chunkTypeParseInt;
   const chunks = [];
   let characters = runes(text);
-  while (chunkLength(characters, chunkTypeInt) > 0) {
-    const splitAt = chunkIndexOf(characters, chunkSizeInt, chunkTypeInt);
+  const textEncoder = new TextEncoder();
+  while (chunkLength(characters, chunkTypeInt, textEncoder) > 0) {
+    const splitAt = chunkIndexOf(
+      characters,
+      chunkSizeInt,
+      chunkTypeInt,
+      textEncoder
+    );
     const chunk = characters.slice(0, splitAt).join('').trim();
     if (chunk !== '' && chunk !== null) {
       chunks.push(chunk);
