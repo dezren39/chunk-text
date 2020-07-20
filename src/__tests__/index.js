@@ -1,7 +1,7 @@
 import chunk from '../index.js';
 import {} from 'fast-text-encoding'; // Required for TextEncoder support in jest.
 
-it("should throw if 'text' is missing or type or value is invalid.", () => {
+it("should throw if 'text' is missing or its type or value are invalid.", () => {
   expect(() => {
     chunk();
   }).toThrow(
@@ -9,7 +9,7 @@ it("should throw if 'text' is missing or type or value is invalid.", () => {
   );
 });
 
-it("should throw if 'size' is missing or type or value is invalid.", () => {
+it("should throw if 'size' is missing or its type or value are invalid.", () => {
   expect(() => {
     chunk('hello world');
   }).toThrow(
@@ -26,7 +26,7 @@ it("should throw if 'size' is missing or type or value is invalid.", () => {
   );
 });
 
-it("should throw if 'type' type or value is invalid.", () => {
+it("should throw if 'type' [type or value] is invalid.", () => {
   expect(() => {
     chunk('hello world', 1, 'one');
   }).toThrow(
