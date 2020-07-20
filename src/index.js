@@ -8,20 +8,24 @@ const assertIsValidText = text => {
   }
 };
 
-const assertIsValidChunkSize = chunkSizeInt => {
-  if (Number.isNaN(chunkSizeInt) || Number.parseInt(chunkSizeInt, 10) <= 0) {
+const assertIsValidChunkSize = chunkSize => {
+  if (Number.isNaN(chunkSize) || Number.parseInt(chunkSize, 10) <= 0) {
     throw new TypeError(
       'Size should be provided as 2nd argument and parseInt to a value greater than zero.'
     );
   }
 };
 
-const assertIsValidChunkType = (chunkType, chunkTypeInt) => {
+const assertIsValidChunkType = (
+  chunkType,
+  chunkTypeParseIntNaN,
+  chunkTypeInt
+) => {
   if (
     typeof chunkType !== 'undefined' &&
     chunkType !== null &&
     chunkType !== '' &&
-    (Number.isNaN(chunkTypeInt) || Number.parseInt(chunkTypeInt, 10) < -1)
+    (chunkTypeParseIntNaN || chunkTypeInt < -1)
   ) {
     throw new TypeError(
       'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
@@ -29,69 +33,73 @@ const assertIsValidChunkType = (chunkType, chunkTypeInt) => {
   }
 };
 
-const chunkLength = (characters, chunkTypeInt) => {
-  let charactersArray;
+const chunkLength = (characters, chunkType) => {
+  let length;
   if (
     typeof characters === 'undefined' ||
     characters === null ||
     characters === ''
   ) {
-    return -1;
-  }
-  if (typeof characters === 'string') {
-    charactersArray = [characters];
-  } else if (Array.isArray(characters) && characters.length) {
-    charactersArray = characters;
+    length = -1;
   } else {
-    return -1;
-  }
-  if (chunkTypeInt === 0) {
-    return charactersArray
-      .map(character => new TextEncoder().encode(character).length)
-      .reduce((accumulator, currentValue) => accumulator + currentValue);
-  } else if (chunkTypeInt > 1) {
-    return charactersArray
-      .map(character => new TextEncoder().encode(character).length)
-      .reduce(
-        (accumulator, currentValue) =>
-          accumulator +
-          (currentValue > chunkTypeInt ? chunkTypeInt : currentValue)
-      );
-  } else {
-    return charactersArray.length;
-  }
-};
+    let charactersArray;
+    if (typeof characters === 'string') {
+      charactersArray = [characters];
+    } else if (Array.isArray(characters) && characters.length) {
+      charactersArray = characters;
+    }
 
-const chunkSplit = (characters, chunkSizeInt, chunkTypeInt) => {
-  let splitAtInt = characters.lastIndexOf(' ', chunkSizeInt);
-  if (splitAtInt === -1) {
-    if (chunkSizeInt > characters.length) {
-      splitAtInt = characters.length - 1;
+    if (
+      !Array.isArray(charactersArray) ||
+      !charactersArray.length ||
+      charactersArray === null
+    ) {
+      length = -1;
+    } else if (chunkType === 0) {
+      length = charactersArray
+        .map(character => new TextEncoder().encode(character).length)
+        .reduce((accumulator, currentValue) => accumulator + currentValue);
+    } else if (chunkType > 0) {
+      const arrayLength = charactersArray
+        .map(character => new TextEncoder().encode(character).length)
+        .reduce(
+          (accumulator, currentValue) =>
+            accumulator + (currentValue > chunkType ? chunkType : currentValue)
+        );
+      const maxLength = charactersArray.length * chunkType;
+      length = maxLength > arrayLength ? arrayLength : maxLength;
     } else {
-      splitAtInt = chunkSizeInt - 1;
+      length = charactersArray.length;
     }
   }
+  return length;
+};
+
+const chunkIndexOf = (characters, chunkSize, chunkType) => {
+  let splitAt = characters.lastIndexOf(' ', chunkSize);
+  if (splitAt > -2 && splitAt < 1) {
+    splitAt = chunkSize;
+  }
+  if (splitAt > characters.length) {
+    splitAt = characters.length;
+  }
   while (
-    chunkSizeInt < chunkLength(characters.slice(0, splitAtInt), chunkTypeInt)
+    splitAt > 0 &&
+    chunkSize < chunkLength(characters.slice(0, splitAt), chunkType)
   ) {
-    splitAtInt = splitAtInt - 1;
+    splitAt = splitAt - 1;
   }
-
-  const splitAtLastSpace = characters.lastIndexOf(' ', splitAtInt);
-  if (splitAtLastSpace !== -1) {
-    splitAtInt = splitAtLastSpace;
+  if ((splitAt > -2 && splitAt < 1) || characters[splitAt] === ' ') {
+    splitAt = splitAt + 1;
   }
-
-  if (splitAtInt === characters.length) {
-    splitAtInt = -1;
+  if (
+    splitAt > characters.length ||
+    splitAt < 0 ||
+    (splitAt === 0 && characters.length === 1)
+  ) {
+    splitAt = characters.length;
   }
-
-  if (splitAtInt === -1) {
-    splitAtInt = chunkSizeInt;
-  } else {
-    splitAtInt = splitAtInt + 1;
-  }
-  return splitAtInt;
+  return splitAt;
 };
 
 export default (text, chunkSize, chunkType) => {
@@ -99,12 +107,13 @@ export default (text, chunkSize, chunkType) => {
   const chunkSizeInt = Number.parseInt(chunkSize, 10);
   assertIsValidChunkSize(chunkSizeInt);
   const chunkTypeParseInt = Number.parseInt(chunkType, 10);
-  assertIsValidChunkType(chunkType, chunkTypeParseInt);
-  const chunkTypeInt = Number.isNaN(chunkTypeParseInt) ? -1 : chunkTypeParseInt;
+  const chunkTypeParseIntNaN = Number.isNaN(chunkTypeParseInt);
+  assertIsValidChunkType(chunkType, chunkTypeParseIntNaN, chunkTypeParseInt);
+  const chunkTypeInt = chunkTypeParseIntNaN ? -1 : chunkTypeParseInt;
   const chunks = [];
   let characters = runes(text);
-  while (chunkLength(characters, chunkTypeInt) > chunkSizeInt) {
-    const splitAt = chunkSplit(characters, chunkSizeInt, chunkTypeInt);
+  while (chunkLength(characters, chunkTypeInt) > 0) {
+    const splitAt = chunkIndexOf(characters, chunkSizeInt, chunkTypeInt);
     const chunk = characters
       .slice(0, splitAt)
       .join('')
@@ -113,10 +122,6 @@ export default (text, chunkSize, chunkType) => {
       chunks.push(chunk);
     }
     characters = characters.slice(splitAt);
-  }
-  const chunk = characters.join('').trim();
-  if (chunk !== '' && chunk !== null) {
-    chunks.push(chunk);
   }
   return chunks;
 };
