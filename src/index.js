@@ -80,7 +80,7 @@ const chunkIndexOf = (characters, chunkSize, chunkType) => {
   if (splitAt > -2 && splitAt < 1) {
     splitAt = chunkSize;
   }
-  if (splitAt > characters.length) {
+  if (splitAt > characters.length || chunkSize >= characters.length) {
     splitAt = characters.length;
   }
   while (
