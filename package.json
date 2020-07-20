@@ -1,7 +1,8 @@
 {
   "name": "chunk-text",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "🔪 chunk/split a string by length without cutting/truncating words.",
+  "type": "commonJs",
   "module": "./dist/index.js",
   "main": "./dist/index.js",
   "exports": {

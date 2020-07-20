@@ -165,15 +165,12 @@ it('should truncate a word if longer than size', () => {
   expect(pieces).toEqual(['hell', 'o', 'you']);
 });
 
-it('should count double width characters as single characters by default', () => {
+it('should count multi-byte characters as single characters by default', () => {
   // each of these characters is two bytes
   const chineseTextA = '𤻪';
   const chineseTextB = '𬜬';
   const chineseTextC = '𬜯';
   const chineseText = chineseTextA + chineseTextB + chineseTextC;
-  const fourCheese = '🧀🧀🧀🧀';
-  const camembert = `${fourCheese} ${fourCheese}`;
-
   expect(chunk(chineseText, 2)).toEqual([
     chineseTextA + chineseTextB,
     chineseTextC,
@@ -183,7 +180,18 @@ it('should count double width characters as single characters by default', () =>
     chineseTextB,
     chineseTextC,
   ]);
+
+  // each of these characters is two bytes
+  const fourCheese = '🧀🧀🧀🧀';
+  const camembert = `${fourCheese} ${fourCheese}`;
   expect(chunk(camembert, 4)).toEqual([fourCheese, fourCheese]);
+
+  // one woman runner emoji with a colour is seven bytes, or five characters
+  // RUNNER(2) + COLOUR(2) + ZJW + GENDER + VS15
+  const runner = '🏃🏽‍♀️';
+  expect(
+    chunk(runner + runner + runner + runner + runner + runner + runner, 3)
+  ).toEqual([runner + runner + runner, runner + runner + runner, runner]);
 });
 
 it('should count all characters as single characters using chunkType -1 or 1 values', () => {
@@ -192,9 +200,6 @@ it('should count all characters as single characters using chunkType -1 or 1 val
   const chineseTextB = '𬜬';
   const chineseTextC = '𬜯';
   const chineseText = chineseTextA + chineseTextB + chineseTextC;
-  const fourCheese = '🧀🧀🧀🧀';
-  const camembert = `${fourCheese} ${fourCheese}`;
-
   expect(chunk(chineseText, 2, -1)).toEqual([
     chineseTextA + chineseTextB,
     chineseTextC,
@@ -204,7 +209,6 @@ it('should count all characters as single characters using chunkType -1 or 1 val
     chineseTextB,
     chineseTextC,
   ]);
-  expect(chunk(camembert, 4, -1)).toEqual([fourCheese, fourCheese]);
   expect(chunk(chineseText, 2, 1)).toEqual([
     chineseTextA + chineseTextB,
     chineseTextC,
@@ -214,6 +218,11 @@ it('should count all characters as single characters using chunkType -1 or 1 val
     chineseTextB,
     chineseTextC,
   ]);
+
+  // each of these characters is two bytes
+  const fourCheese = '🧀🧀🧀🧀';
+  const camembert = `${fourCheese} ${fourCheese}`;
+  expect(chunk(camembert, 4, -1)).toEqual([fourCheese, fourCheese]);
   expect(chunk(camembert, 4, 1)).toEqual([fourCheese, fourCheese]);
 
   // The Woman Running emoji is a ZWJ sequence combining 🏃 Person Running, ‍ Zero Width Joiner and ♀ Female Sign.
@@ -241,9 +250,6 @@ it('should count characters as bytes using chunkType value 0', () => {
   const chineseTextB = '𬜬';
   const chineseTextC = '𬜯';
   const chineseText = chineseTextA + chineseTextB + chineseTextC;
-  const twoCheese = '🧀🧀';
-  const camembert = `${twoCheese + twoCheese} ${twoCheese + twoCheese}`;
-
   expect(chunk(chineseText, 2, 0)).toEqual([
     chineseTextA,
     chineseTextB,
@@ -254,11 +260,24 @@ it('should count characters as bytes using chunkType value 0', () => {
     chineseTextB,
     chineseTextC,
   ]);
+
+  // each of these characters is two bytes
+  const twoCheese = '🧀🧀';
+  const camembert = `${twoCheese + twoCheese} ${twoCheese + twoCheese}`;
   expect(chunk(camembert, 4, 0)).toEqual([
     twoCheese,
     twoCheese,
     twoCheese,
     twoCheese,
+  ]);
+
+  // one woman runner emoji with a colour is seven bytes, or five characters
+  // RUNNER(2) + COLOUR(2) + ZJW + GENDER + VS15
+  const runner = '🏃🏽‍♀️';
+  expect(chunk(runner + runner + runner, 4, 0)).toEqual([
+    runner,
+    runner,
+    runner,
   ]);
 });
 
@@ -274,9 +293,6 @@ it('should count characters as bytes up to maximum N chunkType value > 0', () =>
   const chineseTextB = '𬜬';
   const chineseTextC = '𬜯';
   const chineseText = chineseTextA + chineseTextB + chineseTextC;
-  const twoCheese = '🧀🧀';
-  const camembert = `${twoCheese + twoCheese} ${twoCheese + twoCheese}`;
-
   expect(chunk(chineseText, 2, 2)).toEqual([
     chineseTextA,
     chineseTextB,
@@ -287,12 +303,6 @@ it('should count characters as bytes up to maximum N chunkType value > 0', () =>
     chineseTextB,
     chineseTextC,
   ]);
-  expect(chunk(camembert, 4, 2)).toEqual([
-    twoCheese,
-    twoCheese,
-    twoCheese,
-    twoCheese,
-  ]);
   expect(chunk(chineseText, 2, 4)).toEqual([
     chineseTextA,
     chineseTextB,
@@ -302,6 +312,16 @@ it('should count characters as bytes up to maximum N chunkType value > 0', () =>
     chineseTextA,
     chineseTextB,
     chineseTextC,
+  ]);
+
+  // each of these characters is two bytes
+  const twoCheese = '🧀🧀';
+  const camembert = `${twoCheese + twoCheese} ${twoCheese + twoCheese}`;
+  expect(chunk(camembert, 4, 2)).toEqual([
+    twoCheese,
+    twoCheese,
+    twoCheese,
+    twoCheese,
   ]);
   expect(chunk(camembert, 4, 4)).toEqual([
     twoCheese,
@@ -335,22 +355,45 @@ it('should count characters as bytes up to maximum N chunkType value > 0', () =>
       womanRunningZWJ,
     ]);
   }
-
-  for (let i = 0; i < 100; i++) {
-    expect(chunk(womenRunningZWJ, 4, 1)).toEqual([
-      womanRunningZWJ + womanRunningZWJ + womanRunningZWJ + womanRunningZWJ,
+  expect(chunk(womenRunningZWJ, 4, 1)).toEqual([
+    womanRunningZWJ + womanRunningZWJ + womanRunningZWJ + womanRunningZWJ,
+    womanRunningZWJ + womanRunningZWJ,
+  ]);
+  expect(chunk(womenRunningZWJ, 4, 2)).toEqual([
+    womanRunningZWJ + womanRunningZWJ,
+    womanRunningZWJ + womanRunningZWJ,
+    womanRunningZWJ + womanRunningZWJ,
+  ]);
+  expect(chunk(womenRunningZWJ, 8, 4)).toEqual([
+    womanRunningZWJ + womanRunningZWJ,
+    womanRunningZWJ + womanRunningZWJ,
+    womanRunningZWJ + womanRunningZWJ,
+  ]);
+  for (let i = 4; i < 100; i++) {
+    expect(chunk(womenRunningZWJ, 10, i)).toEqual([
+      womanRunningZWJ + womanRunningZWJ,
+      womanRunningZWJ + womanRunningZWJ,
       womanRunningZWJ + womanRunningZWJ,
     ]);
   }
+
+  // one woman runner emoji with a colour is seven bytes, or five characters
+  // RUNNER(2) + COLOUR(2) + ZJW + GENDER + VS15
+  const runner = '🏃🏽‍♀️';
+  expect(chunk(runner + runner + runner, 4, 2)).toEqual([
+    runner + runner,
+    runner,
+  ]);
 });
 
 it('should count N-byte characters with chunkType value 0 the same as chunkType value N', () => {
   // each of these characters is two bytes
   const chineseText = '𤻪𬜬𬜯';
-  const camembert = '🧀🧀🧀🧀 🧀🧀🧀🧀';
-
   expect(chunk(chineseText, 2, 2)).toEqual(chunk(chineseText, 2, 0));
   expect(chunk(chineseText, 1, 2)).toEqual(chunk(chineseText, 1, 0));
+
+  // each of these characters is two bytes
+  const camembert = '🧀🧀🧀🧀 🧀🧀🧀🧀';
   expect(chunk(camembert, 4, 2)).toEqual(chunk(camembert, 4, 0));
 
   // The Woman Running emoji is a ZWJ sequence combining 🏃 Person Running, ‍ Zero Width Joiner and ♀ Female Sign.
@@ -372,10 +415,11 @@ it('should count N-byte characters with chunkType value 0 the same as chunkType 
 it('should count default chunkType the same as chunkType value -1', () => {
   // each of these characters is two bytes
   const chineseText = '𤻪𬜬𬜯';
-  const camembert = '🧀🧀🧀🧀 🧀🧀🧀🧀';
-
   expect(chunk(chineseText, 2)).toEqual(chunk(chineseText, 2, -1));
   expect(chunk(chineseText, 1)).toEqual(chunk(chineseText, 1, -1));
+
+  // each of these characters is two bytes
+  const camembert = '🧀🧀🧀🧀 🧀🧀🧀🧀';
   expect(chunk(camembert, 4)).toEqual(chunk(camembert, 4, -1));
 
   // The Woman Running emoji is a ZWJ sequence combining 🏃 Person Running, ‍ Zero Width Joiner and ♀ Female Sign.
@@ -399,11 +443,11 @@ it('should not cut combined characters', () => {
   // RUNNER(2) + COLOUR(2) + ZJW + GENDER + VS15
   const runner = '🏃🏽‍♀️';
   const runners = runner + runner + runner;
+  expect(chunk(runners, 3)).toEqual([runners]);
+  expect(chunk(runners, 1)).toEqual([runner, runner, runner]);
+
   // FLAG + RAINBOW
   const flag = '🏳️‍🌈';
   const flags = flag + flag;
-
-  expect(chunk(runners, 3)).toEqual([runners]);
-  expect(chunk(runners, 1)).toEqual([runner, runner, runner]);
   expect(chunk(flags, 1)).toEqual([flag, flag]);
 });
