@@ -1,7 +1,6 @@
-/* eslint-disable import/no-commonjs */
-const runes = require('runes');
+import runes from 'runes';
 
-const assertIsValidText = function(text) {
+const assertIsValidText = (text) => {
   if (typeof text !== 'string') {
     throw new TypeError(
       'Text should be provided as first argument and be a string.'
@@ -9,19 +8,19 @@ const assertIsValidText = function(text) {
   }
 };
 
-const assertIsValidChunkSize = function(chunkSize) {
+const assertIsValidChunkSize = (chunkSize) => {
   if (Number.isNaN(chunkSize) || Number.parseInt(chunkSize, 10) <= 0) {
     throw new TypeError(
-      'Size should be provided as 2nd argument and be a number greater than zero.'
+      'Size should be provided as 2nd argument and parseInt to a value greater than zero.'
     );
   }
 };
 
-const assertIsValidChunkType = function(
+const assertIsValidChunkType = (
   chunkType,
   chunkTypeParseIntNaN,
   chunkTypeInt
-) {
+) => {
   if (
     typeof chunkType !== 'undefined' &&
     chunkType !== null &&
@@ -34,7 +33,7 @@ const assertIsValidChunkType = function(
   }
 };
 
-const chunkLength = function(characters, chunkType, textEncoder) {
+const chunkLength = (characters, chunkType, textEncoder) => {
   let length;
   if (
     typeof characters === 'undefined' ||
@@ -58,11 +57,11 @@ const chunkLength = function(characters, chunkType, textEncoder) {
       length = -1;
     } else if (chunkType === 0) {
       length = charactersArray
-        .map(character => textEncoder.encode(character).length)
+        .map((character) => textEncoder.encode(character).length)
         .reduce((accumulator, currentValue) => accumulator + currentValue);
     } else if (chunkType > 0) {
       const arrayLength = charactersArray
-        .map(character => textEncoder.encode(character).length)
+        .map((character) => textEncoder.encode(character).length)
         .reduce(
           (accumulator, currentValue) =>
             accumulator + (currentValue > chunkType ? chunkType : currentValue)
@@ -76,7 +75,7 @@ const chunkLength = function(characters, chunkType, textEncoder) {
   return length;
 };
 
-const chunkIndexOf = function(characters, chunkSize, chunkType, textEncoder) {
+const chunkIndexOf = (characters, chunkSize, chunkType, textEncoder) => {
   let splitAt = characters.lastIndexOf(' ', chunkSize);
   if (splitAt > -2 && splitAt < 1) {
     splitAt = chunkSize;
@@ -104,7 +103,7 @@ const chunkIndexOf = function(characters, chunkSize, chunkType, textEncoder) {
   return splitAt;
 };
 
-export default function(text, chunkSize, chunkType) {
+export default (text, chunkSize, chunkType) => {
   assertIsValidText(text);
   const chunkSizeInt = Number.parseInt(chunkSize, 10);
   assertIsValidChunkSize(chunkSizeInt);
@@ -129,4 +128,4 @@ export default function(text, chunkSize, chunkType) {
     characters = characters.slice(splitAt);
   }
   return chunks;
-}
+};

@@ -1,7 +1,7 @@
 import chunk from '../index';
 import 'fast-text-encoding'; // Required for TextEncoder support in jest.
 
-it('should throw an error if no text is provided or invalid type.', () => {
+it("should throw if 'text' is missing or its type or value are invalid.", () => {
   expect(() => {
     chunk();
   }).toThrow(
@@ -9,19 +9,19 @@ it('should throw an error if no text is provided or invalid type.', () => {
   );
 });
 
-it('should throw an error if no size is provided or invalid type.', () => {
+it("should throw if 'size' is missing or its type or value are invalid.", () => {
   expect(() => {
     chunk('hello world');
   }).toThrow(
     new TypeError(
-      'Size should be provided as 2nd argument and be a number greater than zero.'
+      'Size should be provided as 2nd argument and parseInt to a value greater than zero.'
     )
   );
   expect(() => {
     chunk('hello world', 0);
   }).toThrow(
     new TypeError(
-      'Size should be provided as 2nd argument and be a number greater than zero.'
+      'Size should be provided as 2nd argument and parseInt to a value greater than zero.'
     )
   );
 });
@@ -230,10 +230,9 @@ it('should count all characters as single characters using chunkType -1 or 1 val
   // each of these characters is five bytes
   // (actually encodes to 13)
   const womanRunningZWJ = '🏃‍♀️';
-  const womenRunningZWJ = `${womanRunningZWJ +
-    womanRunningZWJ +
-    womanRunningZWJ +
-    womanRunningZWJ} ${womanRunningZWJ + womanRunningZWJ}`;
+  const womenRunningZWJ = `${
+    womanRunningZWJ + womanRunningZWJ + womanRunningZWJ + womanRunningZWJ
+  } ${womanRunningZWJ + womanRunningZWJ}`;
   expect(chunk(womenRunningZWJ, 2, -1)).toEqual([
     womanRunningZWJ + womanRunningZWJ,
     womanRunningZWJ + womanRunningZWJ,
@@ -284,10 +283,9 @@ it('should count characters as bytes using chunkType value 0', () => {
   // each of these characters is five bytes
   // (actually encodes to 13)
   const womanRunningZWJ = '🏃‍♀️';
-  const womenRunningZWJ = `${womanRunningZWJ +
-    womanRunningZWJ +
-    womanRunningZWJ +
-    womanRunningZWJ} ${womanRunningZWJ + womanRunningZWJ}`;
+  const womenRunningZWJ = `${
+    womanRunningZWJ + womanRunningZWJ + womanRunningZWJ + womanRunningZWJ
+  } ${womanRunningZWJ + womanRunningZWJ}`;
   expect(chunk(womenRunningZWJ, 26, 0)).toEqual([
     womanRunningZWJ + womanRunningZWJ,
     womanRunningZWJ + womanRunningZWJ,
@@ -382,10 +380,9 @@ it('should count characters as bytes up to maximum N chunkType value > 0', () =>
   // each of these characters is five bytes
   // (actually encodes to 13)
   const womanRunningZWJ = '🏃‍♀️';
-  const womenRunningZWJ = `${womanRunningZWJ +
-    womanRunningZWJ +
-    womanRunningZWJ +
-    womanRunningZWJ} ${womanRunningZWJ + womanRunningZWJ}`;
+  const womenRunningZWJ = `${
+    womanRunningZWJ + womanRunningZWJ + womanRunningZWJ + womanRunningZWJ
+  } ${womanRunningZWJ + womanRunningZWJ}`;
   expect(chunk(womenRunningZWJ, 2, 0)).toEqual([
     womanRunningZWJ,
     womanRunningZWJ,
@@ -474,10 +471,9 @@ it('should count N-byte characters with chunkType value 0 the same as chunkType 
   // The Woman Running emoji is a ZWJ sequence combining 🏃 Person Running, ‍ Zero Width Joiner and ♀ Female Sign.
   // each of these characters is five bytes
   const womanRunningZWJ = '🏃‍♀️';
-  const womenRunningZWJ = `${womanRunningZWJ +
-    womanRunningZWJ +
-    womanRunningZWJ +
-    womanRunningZWJ} ${womanRunningZWJ + womanRunningZWJ}`;
+  const womenRunningZWJ = `${
+    womanRunningZWJ + womanRunningZWJ + womanRunningZWJ + womanRunningZWJ
+  } ${womanRunningZWJ + womanRunningZWJ}`;
   expect(chunk(womenRunningZWJ, 2, 0)).toEqual(chunk(womenRunningZWJ, 2, 5));
 
   // one woman runner emoji with a colour is seven bytes, or five characters
@@ -500,10 +496,9 @@ it('should count default chunkType the same as chunkType value -1', () => {
   // The Woman Running emoji is a ZWJ sequence combining 🏃 Person Running, ‍ Zero Width Joiner and ♀ Female Sign.
   // each of these characters is five bytes
   const womanRunningZWJ = '🏃‍♀️';
-  const womenRunningZWJ = `${womanRunningZWJ +
-    womanRunningZWJ +
-    womanRunningZWJ +
-    womanRunningZWJ} ${womanRunningZWJ + womanRunningZWJ}`;
+  const womenRunningZWJ = `${
+    womanRunningZWJ + womanRunningZWJ + womanRunningZWJ + womanRunningZWJ
+  } ${womanRunningZWJ + womanRunningZWJ}`;
   expect(chunk(womenRunningZWJ, 2)).toEqual(chunk(womenRunningZWJ, 2, -1));
 
   // one woman runner emoji with a colour is seven bytes, or five characters
@@ -513,15 +508,16 @@ it('should count default chunkType the same as chunkType value -1', () => {
   expect(chunk(runners, 2)).toEqual(chunk(runners, 2, -1));
 });
 
-// this test does not pass yet
 it('should not cut combined characters', () => {
   // one woman runner emoji with a colour is seven bytes, or five characters
   // RUNNER(2) + COLOUR(2) + ZJW + GENDER + VS15
-  const runners = '🏃🏽‍♀️🏃🏽‍♀️🏃🏽‍♀️';
-  // FLAG + RAINBOW
-  const flags = '🏳️‍🌈🏳️‍🌈';
+  const runner = '🏃🏽‍♀️';
+  const runners = runner + runner + runner;
+  expect(chunk(runners, 3)).toEqual([runners]);
+  expect(chunk(runners, 1)).toEqual([runner, runner, runner]);
 
-  expect(chunk(runners, 3)).toEqual(['🏃🏽‍♀️🏃🏽‍♀️🏃🏽‍♀️']);
-  expect(chunk(runners, 1)).toEqual(['🏃🏽‍♀️', '🏃🏽‍♀️', '🏃🏽‍♀️']);
-  expect(chunk(flags, 1)).toEqual(['🏳️‍🌈', '🏳️‍🌈']);
+  // FLAG + RAINBOW
+  const flag = '🏳️‍🌈';
+  const flags = flag + flag;
+  expect(chunk(flags, 1)).toEqual([flag, flag]);
 });
