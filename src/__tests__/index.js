@@ -63,6 +63,7 @@ it("should throw if 'type' [type or value] is invalid.", () => {
     )
   );
 });
+
 it("should not throw if 'type' type and value are missing or valid.", () => {
   expect(() => {
     chunk('hello world', 1, '');

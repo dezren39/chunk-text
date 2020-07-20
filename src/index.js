@@ -124,4 +124,4 @@ export default (text, chunkSize, chunkType) => {
     characters = characters.slice(splitAt);
   }
   return chunks;
-};
+}
