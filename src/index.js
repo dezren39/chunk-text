@@ -17,24 +17,49 @@ const assertIsValidChunkSize = function(chunkSize) {
   }
 };
 
-const assertIsValidChunkType = function(
-  chunkType,
-  chunkTypeParseIntNaN,
-  chunkTypeInt
-) {
+const assertIsValidChunkOptions = function(chunkOptions) {
   if (
-    typeof chunkType !== 'undefined' &&
-    chunkType !== null &&
-    chunkType !== '' &&
-    (chunkTypeParseIntNaN || chunkTypeInt < -1)
+    typeof chunkOptions !== 'object' &&
+    typeof chunkOptions !== 'undefined' &&
+    chunkOptions !== null &&
+    chunkOptions !== ''
   ) {
     throw new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'Options should be provided as 3rd (optional) argument and be an object.\n' +
+        "Potential chunkOptions object properties include: ['charLengthMask', 'charLengthType', 'TextEncoder']"
     );
   }
 };
 
-const chunkLength = function(characters, chunkType, textEncoder) {
+const assertIsValidCharLengthMask = (
+  charLengthMask,
+  charLengthMaskIntParseIntNaN,
+  charLengthMaskInt
+) => {
+  if (charLengthMaskIntParseIntNaN || charLengthMaskInt < -1) {
+    throw new TypeError(
+      'charLengthMask should be provided as a chunkOptions property and parseInt to a value >= -1.'
+    );
+  }
+};
+
+const assertIsValidCharLengthType = function(charLengthType) {
+  if (
+    typeof charLengthType !== 'string' ||
+    !(charLengthType === 'length' || charLengthType === 'TextEncoder')
+  ) {
+    throw new TypeError(
+      "charLengthType should be provided as a chunkOptions property and be a value in ['length', 'TextEncoder']"
+    );
+  }
+};
+
+const chunkLength = function(
+  characters,
+  charLengthMask,
+  charLengthType,
+  textEncoder
+) {
   let length;
   if (
     typeof characters === 'undefined' ||
@@ -56,18 +81,31 @@ const chunkLength = function(characters, chunkType, textEncoder) {
       charactersArray === null
     ) {
       length = -1;
-    } else if (chunkType === 0) {
+    } else if (charLengthMask === 0) {
       length = charactersArray
-        .map(character => textEncoder.encode(character).length)
+        .map(
+          character =>
+            (charLengthType === 'TextEncoder'
+              ? textEncoder.encode(character)
+              : character
+            ).length
+        )
         .reduce((accumulator, currentValue) => accumulator + currentValue);
-    } else if (chunkType > 0) {
+    } else if (charLengthMask > 0) {
       const arrayLength = charactersArray
-        .map(character => textEncoder.encode(character).length)
+        .map(
+          character =>
+            (charLengthType === 'TextEncoder'
+              ? textEncoder.encode(character)
+              : character
+            ).length
+        )
         .reduce(
           (accumulator, currentValue) =>
-            accumulator + (currentValue > chunkType ? chunkType : currentValue)
+            accumulator +
+            (currentValue > charLengthMask ? charLengthMask : currentValue)
         );
-      const maxLength = charactersArray.length * chunkType;
+      const maxLength = charactersArray.length * charLengthMask;
       length = maxLength > arrayLength ? arrayLength : maxLength;
     } else {
       length = charactersArray.length;
@@ -75,19 +113,45 @@ const chunkLength = function(characters, chunkType, textEncoder) {
   }
   return length;
 };
-
-const chunkIndexOf = function(characters, chunkSize, chunkType, textEncoder) {
-  let splitAt = characters.lastIndexOf(' ', chunkSize);
-  if (splitAt > -2 && splitAt < 1) {
-    splitAt = chunkSize;
+const lastSpaceOrLength = (text, upTo) => {
+  let lastIndex = text.lastIndexOf(' ', upTo);
+  if (lastIndex === -1) {
+    lastIndex = upTo;
   }
-  if (splitAt > characters.length || chunkSize >= characters.length) {
-    splitAt = characters.length;
+  if (lastIndex > text.length || upTo >= text.length) {
+    lastIndex = text.length;
+  }
+  return lastIndex;
+};
+const chunkIndexOf = function(
+  characters,
+  chunkSize,
+  charLengthMask,
+  charLengthType,
+  textEncoder
+) {
+  let splitAt = lastSpaceOrLength(characters, chunkSize);
+  while (
+    splitAt > 0 &&
+    chunkSize <
+      chunkLength(
+        characters.slice(0, splitAt),
+        charLengthMask,
+        charLengthType,
+        textEncoder
+      )
+  ) {
+    splitAt = splitAt - 1;
   }
   while (
     splitAt > 0 &&
     chunkSize <
-      chunkLength(characters.slice(0, splitAt), chunkType, textEncoder)
+      chunkLength(
+        characters.slice(0, splitAt),
+        charLengthMask,
+        charLengthType,
+        textEncoder
+      )
   ) {
     splitAt = splitAt - 1;
   }
@@ -104,25 +168,66 @@ const chunkIndexOf = function(characters, chunkSize, chunkType, textEncoder) {
   return splitAt;
 };
 
-export default function(text, chunkSize, chunkType) {
+export default function(text, chunkSize, chunkOptions) {
   assertIsValidText(text);
   const chunkSizeInt = Number.parseInt(chunkSize, 10);
   assertIsValidChunkSize(chunkSizeInt);
-  const chunkTypeParseInt = Number.parseInt(chunkType, 10);
-  const chunkTypeParseIntNaN = Number.isNaN(chunkTypeParseInt);
-  assertIsValidChunkType(chunkType, chunkTypeParseIntNaN, chunkTypeParseInt);
-  const chunkTypeInt = chunkTypeParseIntNaN ? -1 : chunkTypeParseInt;
+  assertIsValidChunkOptions(chunkOptions);
+
+  let charLengthMaskInt = -1;
+  let charLengthMaskIntParseInt = -1;
+  let charLengthMaskIntParseIntNaN = true;
+  let textEncoderObject;
+  if (typeof chunkOptions === 'object') {
+    if (Object.prototype.hasOwnProperty.call(chunkOptions, 'charLengthMask')) {
+      charLengthMaskInt = chunkOptions.charLengthMask;
+      charLengthMaskIntParseInt = Number.parseInt(charLengthMaskInt, 10);
+      charLengthMaskIntParseIntNaN = Number.isNaN(charLengthMaskIntParseInt);
+      assertIsValidCharLengthMask(
+        charLengthMaskInt,
+        charLengthMaskIntParseIntNaN,
+        charLengthMaskIntParseInt
+      );
+    }
+    if (Object.prototype.hasOwnProperty.call(chunkOptions, 'charLengthType')) {
+      assertIsValidCharLengthType(chunkOptions.charLengthType);
+      if (Object.prototype.hasOwnProperty.call(chunkOptions, 'TextEncoder')) {
+        textEncoderObject = new chunkOptions.TextEncoder();
+      }
+    }
+  }
+  const charLengthMask = charLengthMaskIntParseIntNaN
+    ? -1
+    : charLengthMaskIntParseInt;
+  const charLengthType =
+    typeof chunkOptions === 'object' && chunkOptions.charLengthType
+      ? chunkOptions.charLengthType
+      : 'length';
+  if (
+    charLengthType === 'TextEncoder' &&
+    (typeof textEncoderObject === 'undefined' ||
+      textEncoderObject === null ||
+      textEncoderObject === '')
+  ) {
+    textEncoderObject = new TextEncoder();
+  }
+  const textEncoder = textEncoderObject;
   const chunks = [];
   let characters = runes(text);
-  const textEncoder = new TextEncoder();
-  while (chunkLength(characters, chunkTypeInt, textEncoder) > 0) {
+  while (
+    chunkLength(characters, charLengthMask, charLengthType, textEncoder) > 0
+  ) {
     const splitAt = chunkIndexOf(
       characters,
       chunkSizeInt,
-      chunkTypeInt,
+      charLengthMask,
+      charLengthType,
       textEncoder
     );
-    const chunk = characters.slice(0, splitAt).join('').trim();
+    const chunk = characters
+      .slice(0, splitAt)
+      .join('')
+      .trim();
     if (chunk !== '' && chunk !== null) {
       chunks.push(chunk);
     }

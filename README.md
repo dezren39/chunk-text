@@ -43,21 +43,21 @@ var out = chunk('hello world', 4);
 /* ['hell', 'o', 'worl', 'd'] */
 ```
 
-#### chunk(text, chunkSize, chunkType);
+#### chunk(text, chunkSize, charLengthMask);
 
-Chunks the `text` string into an array of strings that each have a maximum length of `chunkSize`, as determined by `chunkType`.
+Chunks the `text` string into an array of strings that each have a maximum length of `chunkSize`, as determined by `charLengthMask`.
 
-The default behavior if `chunkType` is excluded is equal to `chunkType=-1`.
+The default behavior if `charLengthMask` is excluded is equal to `charLengthMask=-1`.
 
-For single-byte characters, `chunkType` never changes the results.
+For single-byte characters, `charLengthMask` never changes the results.
 
-For multi-byte characters, `chunkType` allows awareness of multi-byte glyphs according to the following table:
+For multi-byte characters, `charLengthMask` allows awareness of multi-byte glyphs according to the following table:
 
-| `chunkType` | result                                                                                                                                                                                          |
+| `charLengthMask` | result                                                                                                                                                                                          |
 |-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| -1          | - same as default, same as `chunkType=1`<br />- each character counts as 1 towards length                                                                                                         |
+| -1          | - same as default, same as `charLengthMask=1`<br />- each character counts as 1 towards length                                                                                                         |
 | 0           | - each character counts as the number of bytes it contains                                                                                                                                      |
-| >0          | - each character counts as the number of bytes it contains, up to a limit of `chunkType=N`<br />- a 7-byte ZWJ emoji such as runningPerson+ZWJ+femaleSymbol (🏃🏽‍♀️) counts as 2, when `chunkType=2` |
+| >0          | - each character counts as the number of bytes it contains, up to a limit of `charLengthMask=N`<br />- a 7-byte ZWJ emoji such as runningPerson+ZWJ+femaleSymbol (🏃🏽‍♀️) counts as 2, when `charLengthMask=2` |
 
 ``` javascript
 // one woman runner emoji with a colour is seven bytes, or five characters
