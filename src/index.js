@@ -130,6 +130,7 @@ const chunkIndexOf = (
   textEncoder
 ) => {
   let splitAt = lastSpaceOrLength(characters, chunkSize);
+
   while (
     splitAt > 0 &&
     chunkSize <
@@ -142,18 +143,7 @@ const chunkIndexOf = (
   ) {
     splitAt = splitAt - 1;
   }
-  while (
-    splitAt > 0 &&
-    chunkSize <
-      chunkLength(
-        characters.slice(0, splitAt),
-        charLengthMask,
-        charLengthType,
-        textEncoder
-      )
-  ) {
-    splitAt = splitAt - 1;
-  }
+  splitAt = lastSpaceOrLength(characters, splitAt)
   if ((splitAt > -2 && splitAt < 1) || characters[splitAt] === ' ') {
     splitAt = splitAt + 1;
   }
