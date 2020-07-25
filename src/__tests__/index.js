@@ -1,5 +1,4 @@
 import chunk from '../index';
-import 'fast-text-encoding'; // Required for TextEncoder support in jest.
 
 it("should throw if 'text' is missing or its type or value are invalid.", () => {
   expect(() => {
@@ -28,125 +27,148 @@ it("should throw if 'size' is missing or its type or value are invalid.", () => 
 
 it("should throw if 'type' argument's type or value is invalid.", () => {
   expect(() => {
-    chunk('hello world', 1, 'one');
+    chunk('hello world', 1, { charLengthMask: 'one' });
   }).toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'charLengthMask should be provided as a chunkOptions property and parseInt to a value >= -1.'
     )
   );
   expect(() => {
-    chunk('hello world', 1, -2.001);
+    chunk('hello world', 1, { charLengthMask: -2.001 });
   }).toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'charLengthMask should be provided as a chunkOptions property and parseInt to a value >= -1.'
     )
   );
   expect(() => {
-    chunk('hello world', 1, -2);
+    chunk('hello world', 1, { charLengthMask: -2 });
   }).toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'charLengthMask should be provided as a chunkOptions property and parseInt to a value >= -1.'
     )
   );
   expect(() => {
-    chunk('hello world', 1, 3);
+    chunk('hello world', 1, { charLengthMask: 3 });
   }).not.toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'charLengthMask should be provided as a chunkOptions property and parseInt to a value >= -1.'
     )
   );
   expect(() => {
-    chunk('hello world', 1, '3');
+    chunk('hello world', 1, { charLengthMask: '3' });
   }).not.toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'charLengthMask should be provided as a chunkOptions property and parseInt to a value >= -1.'
     )
   );
 });
 
 it("should not throw if 'type' type and value are missing or valid.", () => {
   expect(() => {
-    chunk('hello world', 1, '');
-  }).not.toThrow(
+    chunk('hello world', 1, { charLengthMask: '' });
+  }).toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'charLengthMask should be provided as a chunkOptions property and parseInt to a value >= -1.'
     )
   );
   expect(() => {
-    chunk('hello world', 1, null);
-  }).not.toThrow(
+    chunk('hello world', 1, { charLengthMask: null });
+  }).toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'charLengthMask should be provided as a chunkOptions property and parseInt to a value >= -1.'
     )
   );
   expect(() => {
-    chunk('hello world', 1, undefined);
+    chunk('hello world', 1, { charLengthMask: undefined });
+  }).toThrow(
+    new TypeError(
+      'charLengthMask should be provided as a chunkOptions property and parseInt to a value >= -1.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, {});
   }).not.toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'charLengthMask should be provided as a chunkOptions property and parseInt to a value >= -1.'
+    )
+  );
+  expect(() => {
+    chunk('hello world', 1, { charLengthType: 'length' });
+  }).not.toThrow(
+    new TypeError(
+      'charLengthMask should be provided as a chunkOptions property and parseInt to a value >= -1.'
     )
   );
   expect(() => {
     chunk('hello world', 1);
   }).not.toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'Options should be provided as 3rd (optional) argument and be an object.\n' +
+        "Potential chunkOptions object properties include: ['charLengthMask', 'charLengthType', 'TextEncoder']"
     )
   );
   expect(() => {
-    chunk('hello world', 1, -1.999);
+    chunk('hello world', 1, { charLengthMask: -1.999 });
   }).not.toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'Options should be provided as 3rd (optional) argument and be an object.\n' +
+        "Potential chunkOptions object properties include: ['charLengthMask', 'charLengthType', 'TextEncoder']"
     )
   );
   expect(() => {
-    chunk('hello world', 1, -0.001);
+    chunk('hello world', 1, { charLengthMask: -0.001 });
   }).not.toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'Options should be provided as 3rd (optional) argument and be an object.\n' +
+        "Potential chunkOptions object properties include: ['charLengthMask', 'charLengthType', 'TextEncoder']"
     )
   );
   expect(() => {
-    chunk('hello world', 1, 0.0);
+    chunk('hello world', 1, { charLengthMask: 0.0 });
   }).not.toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'Options should be provided as 3rd (optional) argument and be an object.\n' +
+        "Potential chunkOptions object properties include: ['charLengthMask', 'charLengthType', 'TextEncoder']"
     )
   );
   expect(() => {
-    chunk('hello world', 1, 1.0);
+    chunk('hello world', 1, { charLengthMask: 1.0 });
   }).not.toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'Options should be provided as 3rd (optional) argument and be an object.\n' +
+        "Potential chunkOptions object properties include: ['charLengthMask', 'charLengthType', 'TextEncoder']"
     )
   );
   expect(() => {
-    chunk('hello world', 1, new Number.BigInt(2.0));
+    chunk('hello world', 1, { charLengthMask: new Number.BigInt(2.0) });
   }).not.toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'Options should be provided as 3rd (optional) argument and be an object.\n' +
+        "Potential chunkOptions object properties include: ['charLengthMask', 'charLengthType', 'TextEncoder']"
     )
   );
   expect(() => {
-    chunk('hello world', 1, 2.999);
+    chunk('hello world', 1, { charLengthMask: 2.999 });
   }).not.toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'Options should be provided as 3rd (optional) argument and be an object.\n' +
+        "Potential chunkOptions object properties include: ['charLengthMask', 'charLengthType', 'TextEncoder']"
     )
   );
   expect(() => {
-    chunk('hello world', 1, '2.99999 years');
+    chunk('hello world', 1, { charLengthMask: '2.99999 years' });
   }).not.toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'Options should be provided as 3rd (optional) argument and be an object.\n' +
+        "Potential chunkOptions object properties include: ['charLengthMask', 'charLengthType', 'TextEncoder']"
     )
   );
   expect(() => {
-    chunk('hello world', 1, '2');
+    chunk('hello world', 1, { charLengthMask: '2' });
   }).not.toThrow(
     new TypeError(
-      'Type should be provided as 3rd (optional) argument and parseInt to a value >= -1.'
+      'Options should be provided as 3rd (optional) argument and be an object.\n' +
+        "Potential chunkOptions object properties include: ['charLengthMask', 'charLengthType', 'TextEncoder']"
     )
   );
 });
@@ -195,7 +217,7 @@ it('should count multi-byte characters as single characters by default', () => {
   ).toEqual([runner + runner + runner, runner + runner + runner, runner]);
 });
 
-it('should count all characters as single characters using chunkType -1 or 1 values', () => {
+it('should count all characters as single characters using charLengthMask -1 or 1 values', () => {
   // each of these characters is two bytes
   const chineseTextA = '𤻪';
   const chineseTextB = '𬜬';
@@ -245,7 +267,7 @@ it('should count all characters as single characters using chunkType -1 or 1 val
   ]);
 });
 
-it('should count characters as bytes using chunkType value 0', () => {
+it('should count characters as bytes using charLengthMask value 0', () => {
   // each of these characters is two bytes (actually encodes to 4)
   const chineseTextA = '𤻪';
   const chineseTextB = '𬜬';
@@ -329,13 +351,13 @@ it('should count characters as bytes using chunkType value 0', () => {
   ]);
 });
 
-it('should count single width characters the same with all chunkType values', () => {
+it('should count single width characters the same with all charLengthMask values', () => {
   for (let i = 0; i < 100; i++) {
     expect(chunk('hello you', 4, i)).toEqual(['hell', 'o', 'you']);
   }
 });
 
-it('should count characters as bytes up to maximum N chunkType value > 0', () => {
+it('should count characters as bytes up to maximum N charLengthMask value > 0', () => {
   // each of these characters is two bytes (actually encodes to 4)
   const chineseTextA = '𤻪';
   const chineseTextB = '𬜬';
@@ -463,10 +485,12 @@ it('should count characters as bytes up to maximum N chunkType value > 0', () =>
   ]);
 });
 
-it('should count N-byte characters with chunkType value 0 the same as chunkType value N', () => {
+it('should count N-byte characters with charLengthMask value 0 the same as charLengthMask value N', () => {
   // each of these characters is two bytes (actually encodes to 4)
   const camembert = '🧀🧀🧀🧀 🧀🧀🧀🧀';
-  expect(chunk(camembert, 4, 2)).toEqual(chunk(camembert, 8, 0));
+  expect(chunk(camembert, 4, 2)).toEqual(
+    chunk(camembert, 8, { charLengthMask: 0 })
+  );
 
   // The Woman Running emoji is a ZWJ sequence combining 🏃 Person Running, ‍ Zero Width Joiner and ♀ Female Sign.
   // each of these characters is five bytes
@@ -474,24 +498,34 @@ it('should count N-byte characters with chunkType value 0 the same as chunkType 
   const womenRunningZWJ = `${
     womanRunningZWJ + womanRunningZWJ + womanRunningZWJ + womanRunningZWJ
   } ${womanRunningZWJ + womanRunningZWJ}`;
-  expect(chunk(womenRunningZWJ, 2, 0)).toEqual(chunk(womenRunningZWJ, 2, 5));
+  expect(chunk(womenRunningZWJ, 2, 0)).toEqual(
+    chunk(womenRunningZWJ, 2, { charLengthMask: 5 })
+  );
 
   // one woman runner emoji with a colour is seven bytes, or five characters
   // RUNNER(2) + COLOUR(2) + ZJW + GENDER + VS15
   const runner = '🏃🏽‍♀️';
   const runners = runner + runner + runner;
-  expect(chunk(runners, 2, 0)).toEqual(chunk(runners, 2, 7));
+  expect(chunk(runners, 2, 0)).toEqual(
+    chunk(runners, 2, { charLengthMask: 7 })
+  );
 });
 
-it('should count default chunkType the same as chunkType value -1', () => {
+it('should count default charLengthMask the same as charLengthMask value -1', () => {
   // each of these characters is two bytes
   const chineseText = '𤻪𬜬𬜯';
-  expect(chunk(chineseText, 2)).toEqual(chunk(chineseText, 2, -1));
-  expect(chunk(chineseText, 1)).toEqual(chunk(chineseText, 1, -1));
+  expect(chunk(chineseText, 2)).toEqual(
+    chunk(chineseText, 2, { charLengthMask: -1 })
+  );
+  expect(chunk(chineseText, 1)).toEqual(
+    chunk(chineseText, 1, { charLengthMask: -1 })
+  );
 
   // each of these characters is two bytes
   const camembert = '🧀🧀🧀🧀 🧀🧀🧀🧀';
-  expect(chunk(camembert, 4)).toEqual(chunk(camembert, 4, -1));
+  expect(chunk(camembert, 4)).toEqual(
+    chunk(camembert, 4, { charLengthMask: -1 })
+  );
 
   // The Woman Running emoji is a ZWJ sequence combining 🏃 Person Running, ‍ Zero Width Joiner and ♀ Female Sign.
   // each of these characters is five bytes
@@ -499,13 +533,15 @@ it('should count default chunkType the same as chunkType value -1', () => {
   const womenRunningZWJ = `${
     womanRunningZWJ + womanRunningZWJ + womanRunningZWJ + womanRunningZWJ
   } ${womanRunningZWJ + womanRunningZWJ}`;
-  expect(chunk(womenRunningZWJ, 2)).toEqual(chunk(womenRunningZWJ, 2, -1));
+  expect(chunk(womenRunningZWJ, 2)).toEqual(
+    chunk(womenRunningZWJ, 2, { charLengthMask: -1 })
+  );
 
   // one woman runner emoji with a colour is seven bytes, or five characters
   // RUNNER(2) + COLOUR(2) + ZJW + GENDER + VS15
   const runner = '🏃🏽‍♀️';
   const runners = runner + runner + runner;
-  expect(chunk(runners, 2)).toEqual(chunk(runners, 2, -1));
+  expect(chunk(runners, 2)).toEqual(chunk(runners, 2, { charLengthMask: -1 }));
 });
 
 it('should not cut combined characters', () => {
