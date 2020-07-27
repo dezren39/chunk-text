@@ -42,6 +42,19 @@ const assertIsValidCharLengthMask = (
   }
 };
 
+const assertIsValidTextEncoder = (textEncoder) => {
+  if (
+    typeof textEncoder === 'string' ||
+    Array.isArray(textEncoder) ||
+    typeof textEncoder === 'undefined' ||
+    textEncoder === null
+  ) {
+    throw new TypeError(
+      "textEncoder should be provided as a chunkOptions property and be an object containing the .decode(text).length property."
+    );
+  }
+};
+
 const assertIsValidCharLengthType = (charLengthType) => {
   if (
     typeof charLengthType !== 'string' ||
@@ -180,8 +193,9 @@ export default (text, chunkSize, chunkOptions) => {
     }
     if (Object.prototype.hasOwnProperty.call(chunkOptions, 'charLengthType')) {
       assertIsValidCharLengthType(chunkOptions.charLengthType);
-      if (Object.prototype.hasOwnProperty.call(chunkOptions, 'TextEncoder')) {
-        textEncoderObject = new chunkOptions.TextEncoder();
+      if (Object.prototype.hasOwnProperty.call(chunkOptions, 'textEncoder')) {
+        assertIsValidTextEncoder(chunkOptions.textEncoder);
+        textEncoderObject = chunkOptions.textEncoder;
       }
     }
   }
