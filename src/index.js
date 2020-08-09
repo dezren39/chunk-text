@@ -50,7 +50,7 @@ const assertIsValidTextEncoder = (textEncoder) => {
     textEncoder === null
   ) {
     throw new TypeError(
-      "textEncoder should be provided as a chunkOptions property and be an object containing the .decode(text).length property."
+      'textEncoder should be provided as a chunkOptions property and be an object containing the .decode(text).length property.'
     );
   }
 };
@@ -125,6 +125,7 @@ const chunkLength = (
   }
   return length;
 };
+
 const lastSpaceOrLength = (text, upTo) => {
   let lastIndex = text.lastIndexOf(' ', upTo);
   if (lastIndex === -1) {
@@ -135,6 +136,7 @@ const lastSpaceOrLength = (text, upTo) => {
   }
   return lastIndex;
 };
+
 const chunkIndexOf = (
   characters,
   chunkSize,
@@ -156,7 +158,7 @@ const chunkIndexOf = (
   ) {
     splitAt = splitAt - 1;
   }
-  splitAt = lastSpaceOrLength(characters, splitAt)
+  splitAt = lastSpaceOrLength(characters, splitAt);
   if ((splitAt > -2 && splitAt < 1) || characters[splitAt] === ' ') {
     splitAt = splitAt + 1;
   }
