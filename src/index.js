@@ -50,7 +50,7 @@ const assertIsValidTextEncoder = (textEncoder) => {
     textEncoder === null
   ) {
     throw new TypeError(
-      'textEncoder should be provided as a chunkOptions property and be an object containing the .decode(text).length property.'
+      'textEncoder should be provided as a chunkOptions property and be an object containing the .encode(text).length property.'
     );
   }
 };
