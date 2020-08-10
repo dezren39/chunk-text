@@ -1,5 +1,5 @@
 import chunk from '../index';
-
+import { TextEncoder } from 'fastestsmallesttextencoderdecoder-encodeinto';
 it("should throw if 'text' is missing or its type or value are invalid.", () => {
   expect(() => {
     chunk();
@@ -559,4 +559,52 @@ it('should not cut combined characters', () => {
   const flag = '🏳️‍🌈';
   const flags = flag + flag;
   expect(chunk(flags, 1)).toEqual([flag, flag]);
+});
+
+it('allows alternate TextEncoder', () => {
+  // one woman runner emoji with a colour is seven bytes, or five characters
+  // RUNNER(2) + COLOUR(2) + ZJW + GENDER + VS15
+  // 7 each as length, 17 each as TextEncoder
+  // 21 as length, 51 as TextEncoder
+  const runners = '🏃🏽‍♀️🏃🏽‍♀️🏃🏽‍♀️';
+
+  expect(() => {
+    chunk(runners, 14, { charLengthMask: 0, charLengthType: 'TextEncoder' });
+  }).toThrow(
+    new ReferenceError(
+      "TextEncoder is not natively defined, new TextEncoder must be passed in with the 'chunkOptions.textEncoder' property."
+    )
+  );
+
+  expect(
+    chunk(runners, 51, {
+      charLengthMask: 0,
+      charLengthType: 'TextEncoder',
+      textEncoder: new TextEncoder(),
+    })
+  ).toEqual(chunk(runners, 21, { charLengthMask: 0 }));
+
+  // FLAG + RAINBOW
+  // 2 each as length, 4 each as TextEncoder
+  // 4 as length, 8 as TextEncoder
+  // Node v14.5.0 does not provide TextEncoder natively.
+  const flags = '🏳️‍🌈🏳️‍🌈';
+
+  expect(
+    chunk(flags, 4, {
+      charLengthMask: 0,
+      charLengthType: 'TextEncoder',
+      textEncoder: new TextEncoder(),
+    })
+  ).toEqual(chunk(flags, 2, { charLengthMask: 0 }));
+
+  expect(
+    chunk(flags, 999, {
+      charLengthMask: 0,
+      charLengthType: 'TextEncoder',
+      textEncoder: {
+        encode: () => ({ length: 999 }),
+      },
+    })
+  ).toEqual(chunk(flags, 2, { charLengthMask: 0 }));
 });

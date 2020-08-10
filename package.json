@@ -50,6 +50,7 @@
     "eslint-plugin-import": "^2.3.0",
     "eslint-plugin-jest": "^23.18.0",
     "eslint-plugin-prettier": "^3.1.4",
+    "fastestsmallesttextencoderdecoder-encodeinto": "^1.0.22",
     "jest": "^26.1.0",
     "prettier": "^2.0.5"
   },
