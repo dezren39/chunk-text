@@ -26,7 +26,7 @@ const assertIsValidChunkOptions = function(chunkOptions) {
   ) {
     throw new TypeError(
       'Options should be provided as 3rd (optional) argument and be an object.\n' +
-        "Potential chunkOptions object properties include: ['charLengthMask', 'charLengthType', 'TextEncoder']"
+        "Potential chunkOptions object properties include: ['charLengthMask', 'charLengthType', 'textEncoder']"
     );
   }
 };
