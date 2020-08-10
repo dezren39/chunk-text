@@ -43,6 +43,19 @@ const assertIsValidCharLengthMask = (
   }
 };
 
+const assertIsValidTextEncoder = function(textEncoder) {
+  if (
+    typeof textEncoder === 'string' ||
+    Array.isArray(textEncoder) ||
+    typeof textEncoder === 'undefined' ||
+    textEncoder === null
+  ) {
+    throw new TypeError(
+      'textEncoder should be provided as a chunkOptions property and be an object containing the .encode(text).length property.'
+    );
+  }
+};
+
 const assertIsValidCharLengthType = function(charLengthType) {
   if (
     typeof charLengthType !== 'string' ||
@@ -189,8 +202,9 @@ export default function(text, chunkSize, chunkOptions) {
     }
     if (Object.prototype.hasOwnProperty.call(chunkOptions, 'charLengthType')) {
       assertIsValidCharLengthType(chunkOptions.charLengthType);
-      if (Object.prototype.hasOwnProperty.call(chunkOptions, 'TextEncoder')) {
-        textEncoderObject = new chunkOptions.TextEncoder();
+      if (Object.prototype.hasOwnProperty.call(chunkOptions, 'textEncoder')) {
+        assertIsValidTextEncoder(chunkOptions.textEncoder);
+        textEncoderObject = chunkOptions.textEncoder;
       }
     }
   }
