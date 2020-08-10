@@ -200,6 +200,7 @@ export default (text, chunkSize, chunkOptions) => {
           assertIsValidTextEncoder(chunkOptions.textEncoder);
           textEncoderObject = chunkOptions.textEncoder;
         }
+      }
     }
   }
   const charLengthMask = charLengthMaskIntParseIntNaN
