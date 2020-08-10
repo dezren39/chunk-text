@@ -66,10 +66,32 @@ For multi-byte characters, `charLengthMask` allows awareness of multi-byte glyph
 const runner = '🏃🏽‍♀️';
 const outDefault = chunk(runner+runner+runner, 4);
 /* [ '🏃🏽‍♀️🏃🏽‍♀️🏃🏽‍♀️' ] */
-const outZero = chunk(runner+runner+runner, 4, 0);
+const outZero = chunk(runner+runner+runner, 4, { charLengthMask: 0 });
 /* [ '🏃🏽‍♀️', '🏃🏽‍♀️', '🏃🏽‍♀️' ] */
-const outTwo = chunk(runner+runner+runner, 4, 2);
+const outTwo = chunk(runner+runner+runner, 4, { charLengthMask: 2 });
 /* [ '🏃🏽‍♀️🏃🏽‍♀️', '🏃🏽‍♀️' ] */
+// FLAG + RAINBOW
+// 2 each as length, 4 each as TextEncoder
+// 4 as length, 8 as TextEncoder
+// Node v14.5.0 does not provide TextEncoder natively.
+const flags = '🏳️‍🌈🏳️‍🌈';
+// will fail if your environment doesn't already have TextEncoder
+chunk(flags, 8, { charLengthMask: 0, charLengthType: 'TextEncoder' });
+// [ '🏳️‍🌈', '🏳️‍🌈' ]
+chunk(flags, 4, {
+  charLengthMask: 0,
+  charLengthType: 'TextEncoder',
+  textEncoder: new TextEncoder(),
+})
+// [ '🏳️‍🌈', '🏳️‍🌈' ]
+chunk(flags, 999, {
+  charLengthMask: 0,
+  charLengthType: 'TextEncoder',
+  textEncoder: {
+    encode: () => ({ length: 999 }),
+  },
+})
+// [ '🏳️‍🌈', '🏳️‍🌈' ]
 ```
 
 ## Usage in Algolia context
