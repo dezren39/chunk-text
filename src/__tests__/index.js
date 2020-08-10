@@ -327,8 +327,8 @@ it('should count characters as bytes using charLengthMask value 0', () => {
     )
   ).toEqual([
     `12123123 1231231 312312312 123 12 ${womanRunningZWJ}`,
-    `${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ} ${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ}`,
-    `${womanRunningZWJ} ${womanRunningZWJ} ${womanRunningZWJ}${womanRunningZWJ} ${womanRunningZWJ}`,
+    `${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ}`,
+    `${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ} ${womanRunningZWJ} ${womanRunningZWJ}${womanRunningZWJ} ${womanRunningZWJ}`,
   ]);
 
   // one woman runner emoji with a colour is seven bytes, or five characters
@@ -340,7 +340,7 @@ it('should count characters as bytes using charLengthMask value 0', () => {
   ]);
   expect(
     chunk(
-      `12123123 1231231 312312312 123 12 ${runner}${runner}${runner}${runner}${runner}${runner} ${runner}${runner}${runner}${runner} ${runner} ${runner}${runner} ${runner}`,
+      `12123123 1231231 312312312 123 12 ${runner}${runner}${runner} ${runner}${runner}${runner} ${runner}${runner}${runner}${runner} ${runner} ${runner}${runner} ${runner}`,
       28,
       { charLengthMask: 0 }
     )
