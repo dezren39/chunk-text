@@ -208,13 +208,19 @@ export default function(text, chunkSize, chunkOptions) {
     chunkOptions.charLengthType
     ? chunkOptions.charLengthType
     : 'length';
-  if (
-    charLengthType === 'TextEncoder' &&
-    (typeof textEncoderObject === 'undefined' ||
-      textEncoderObject === null ||
-      textEncoderObject === '')
-  ) {
-    textEncoderObject = new TextEncoder();
+  try {
+    if (
+      charLengthType === 'TextEncoder' &&
+      (typeof textEncoderObject === 'undefined' ||
+        textEncoderObject === null ||
+        textEncoderObject === '')
+    ) {
+      textEncoderObject = new TextEncoder();
+    }
+  } catch (ex) {
+    throw new ReferenceError(
+      "TextEncoder is not natively defined, new TextEncoder must be passed in with the 'chunkOptions.textEncoder' property."
+    );
   }
   const textEncoder = textEncoderObject;
   const chunks = [];
