@@ -13,14 +13,14 @@ it("should throw if 'size' is missing or its type or value are invalid.", () => 
     chunk('hello world');
   }).toThrow(
     new TypeError(
-      'Size should be provided as 2nd argument and parseInt to a value greater than zero.'
+      'Size should be provided as 2nd argument and be a number greater than zero.'
     )
   );
   expect(() => {
     chunk('hello world', 0);
   }).toThrow(
     new TypeError(
-      'Size should be provided as 2nd argument and parseInt to a value greater than zero.'
+      'Size should be provided as 2nd argument and be a number greater than zero.'
     )
   );
 });
@@ -327,8 +327,8 @@ it('should count characters as bytes using charLengthMask value 0', () => {
     )
   ).toEqual([
     `12123123 1231231 312312312 123 12 ${womanRunningZWJ}`,
-    `${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ}`,
-    `${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ} ${womanRunningZWJ} ${womanRunningZWJ}${womanRunningZWJ} ${womanRunningZWJ}`,
+    `${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ} ${womanRunningZWJ}${womanRunningZWJ}${womanRunningZWJ}`,
+    `${womanRunningZWJ} ${womanRunningZWJ} ${womanRunningZWJ}${womanRunningZWJ} ${womanRunningZWJ}`,
   ]);
 
   // one woman runner emoji with a colour is seven bytes, or five characters
@@ -346,9 +346,8 @@ it('should count characters as bytes using charLengthMask value 0', () => {
     )
   ).toEqual([
     `12123123 1231231 312312312`,
-    `123 12`,
-    `${runner}${runner}${runner}${runner}`,
-    `${runner}${runner}`,
+    `123 12 ${runner}${runner}${runner}`,
+    `${runner}${runner}${runner}`,
     `${runner}${runner}${runner}${runner}`,
     `${runner} ${runner}${runner}`,
     `${runner}`,
