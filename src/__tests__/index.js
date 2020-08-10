@@ -345,7 +345,7 @@ it('should count characters as bytes using charLengthMask value 0', () => {
   ).toEqual([
     `12123123 1231231 312312312`,
     `123 12`,
-    `${runner}${runner}${runner}${runner}`,
+    `${runner}    ${runner}${runner}${runner}`,
     `${runner}${runner}`,
     `${runner}${runner}${runner}${runner}`,
     `${runner} ${runner}${runner}`,
