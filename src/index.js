@@ -87,8 +87,7 @@ const chunkLength = function(
           character =>
             (charLengthType === 'TextEncoder'
               ? textEncoder.encode(character)
-              : character
-            ).length
+              : character).length
         )
         .reduce((accumulator, currentValue) => accumulator + currentValue);
     } else if (charLengthMask > 0) {
@@ -97,8 +96,7 @@ const chunkLength = function(
           character =>
             (charLengthType === 'TextEncoder'
               ? textEncoder.encode(character)
-              : character
-            ).length
+              : character).length
         )
         .reduce(
           (accumulator, currentValue) =>
@@ -199,10 +197,10 @@ export default function(text, chunkSize, chunkOptions) {
   const charLengthMask = charLengthMaskIntParseIntNaN
     ? -1
     : charLengthMaskIntParseInt;
-  const charLengthType =
-    typeof chunkOptions === 'object' && chunkOptions.charLengthType
-      ? chunkOptions.charLengthType
-      : 'length';
+  const charLengthType = typeof chunkOptions === 'object' &&
+    chunkOptions.charLengthType
+    ? chunkOptions.charLengthType
+    : 'length';
   if (
     charLengthType === 'TextEncoder' &&
     (typeof textEncoderObject === 'undefined' ||
@@ -224,10 +222,7 @@ export default function(text, chunkSize, chunkOptions) {
       charLengthType,
       textEncoder
     );
-    const chunk = characters
-      .slice(0, splitAt)
-      .join('')
-      .trim();
+    const chunk = characters.slice(0, splitAt).join('').trim();
     if (chunk !== '' && chunk !== null) {
       chunks.push(chunk);
     }
