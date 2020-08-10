@@ -13,14 +13,14 @@ it("should throw if 'size' is missing or its type or value are invalid.", () => 
     chunk('hello world');
   }).toThrow(
     new TypeError(
-      'Size should be provided as 2nd argument and be a number greater than zero.'
+      'Size should be provided as 2nd argument and parseInt to a value greater than zero.'
     )
   );
   expect(() => {
     chunk('hello world', 0);
   }).toThrow(
     new TypeError(
-      'Size should be provided as 2nd argument and be a number greater than zero.'
+      'Size should be provided as 2nd argument and parseInt to a value greater than zero.'
     )
   );
 });

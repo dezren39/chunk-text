@@ -12,7 +12,7 @@ const assertIsValidText = function(text) {
 const assertIsValidChunkSize = function(chunkSize) {
   if (Number.isNaN(chunkSize) || Number.parseInt(chunkSize, 10) <= 0) {
     throw new TypeError(
-      'Size should be provided as 2nd argument and be a number greater than zero.'
+      'Size should be provided as 2nd argument and parseInt to a value greater than zero.'
     );
   }
 };
