@@ -59,7 +59,7 @@ For multi-byte characters, `chunkOptions.charLengthMask` allows awareness of mul
 | 0           | - each character counts as the number of bytes it contains                                                                                                                                      |
 | >0          | - each character counts as the number of bytes it contains, up to a limit of `chunkOptions.charLengthMask=N`<br />- a 7-byte ZWJ emoji such as runningPerson+ZWJ+femaleSymbol (🏃🏽‍♀️) counts as 2, when `chunkOptions.charLengthMask=2` |
 
-You can also substitute from the default `chunkOptions.charLengthType` property from `length` to `TextEncoder`.
+You can also substitute from the default `chunkOptions.charLengthType` property of `length` to `TextEncoder`.
 
 This enables you to pass any object to `chunkOptions.textEncoder` which matches the signature, `chunkOptions.textEncoder.encode(text).length`
 
