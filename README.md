@@ -63,7 +63,21 @@ You can also substitute from the default `chunkOptions.charLengthType` property 
 
 This enables you to pass any object to `chunkOptions.textEncoder` which matches the signature, `chunkOptions.textEncoder.encode(text).length`
 
-If your environment natively contains the `TextEncoder` class, one can rely on `new TextEncoder()` in order to use this `chunkOptions.charLengthType`.
+If your environment natively contains the `TextEncoder` prototype and `chunkOptions.textEncoder` isn't provided,
+
+the module attempts `new TextEncoder()` in order to use this `chunkOptions.charLengthType`.
+
+If
+
+- `chunkOptions.charLengthType` is set to `TextEncoder`.
+- `chunkOptions.textEncoder` isn't provided.
+- `TextEncoder` prototype isn't provided by the environment.
+
+Then
+
+- `ReferenceError` will occur.
+
+End If
 
 ``` javascript
 // one woman runner emoji with a colour is seven bytes, or five characters
@@ -86,10 +100,10 @@ const outTwo = chunk(runner+runner+runner, 4, { charLengthMask: 2 });
 // Node v14.5.0 does not provide TextEncoder natively.
 const flags = '🏳️‍🌈🏳️‍🌈';
 
-// \/ will fail if your environment doesn't already have TextEncoder \/
+// \/ will fail if your environment doesn't already have TextEncoder prototype \/
 chunk(flags, 8, { charLengthMask: 0, charLengthType: 'TextEncoder' });
 // [ '🏳️‍🌈', '🏳️‍🌈' ]
-// /\ will fail if your environment doesn't already have TextEncoder /\
+// /\ will fail if your environment doesn't already have TextEncoder prototype /\
 
 chunk(flags, 4, {
   charLengthMask: 0,
