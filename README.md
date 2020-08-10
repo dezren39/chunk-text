@@ -64,26 +64,34 @@ For multi-byte characters, `charLengthMask` allows awareness of multi-byte glyph
 // RUNNER(2) + COLOUR(2) + ZJW + GENDER + VS15
 // (actually encodes to 17)
 const runner = '🏃🏽‍♀️';
+
 const outDefault = chunk(runner+runner+runner, 4);
 /* [ '🏃🏽‍♀️🏃🏽‍♀️🏃🏽‍♀️' ] */
+
 const outZero = chunk(runner+runner+runner, 4, { charLengthMask: 0 });
 /* [ '🏃🏽‍♀️', '🏃🏽‍♀️', '🏃🏽‍♀️' ] */
+
 const outTwo = chunk(runner+runner+runner, 4, { charLengthMask: 2 });
 /* [ '🏃🏽‍♀️🏃🏽‍♀️', '🏃🏽‍♀️' ] */
+
 // FLAG + RAINBOW
 // 2 each as length, 4 each as TextEncoder
 // 4 as length, 8 as TextEncoder
 // Node v14.5.0 does not provide TextEncoder natively.
 const flags = '🏳️‍🌈🏳️‍🌈';
-// will fail if your environment doesn't already have TextEncoder
+
+// \/ will fail if your environment doesn't already have TextEncoder \/
 chunk(flags, 8, { charLengthMask: 0, charLengthType: 'TextEncoder' });
 // [ '🏳️‍🌈', '🏳️‍🌈' ]
+// /\ will fail if your environment doesn't already have TextEncoder /\
+
 chunk(flags, 4, {
   charLengthMask: 0,
   charLengthType: 'TextEncoder',
   textEncoder: new TextEncoder(),
 })
 // [ '🏳️‍🌈', '🏳️‍🌈' ]
+
 chunk(flags, 999, {
   charLengthMask: 0,
   charLengthType: 'TextEncoder',
@@ -107,7 +115,6 @@ The text chunks can then be [distributed over multiple records](https://www.algo
 Here is an example of how to split an existing record into several ones:
 
 ``` javascript
-
 var chunk = require('chunk-text');
 var record = {
   post_id: 100,
@@ -119,5 +126,4 @@ var records = [];
 chunks.forEach(function(content) {
   records.push(Object.assign({}, record, {content: content}));
 });
-
 ```
