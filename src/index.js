@@ -31,11 +31,11 @@ const assertIsValidChunkOptions = function(chunkOptions) {
   }
 };
 
-const assertIsValidCharLengthMask = (
+const assertIsValidCharLengthMask = function(
   charLengthMask,
   charLengthMaskIntParseIntNaN,
   charLengthMaskInt
-) => {
+) {
   if (charLengthMaskIntParseIntNaN || charLengthMaskInt < -1) {
     throw new TypeError(
       'charLengthMask should be provided as a chunkOptions property and parseInt to a value >= -1.'
@@ -202,9 +202,11 @@ export default function(text, chunkSize, chunkOptions) {
     }
     if (Object.prototype.hasOwnProperty.call(chunkOptions, 'charLengthType')) {
       assertIsValidCharLengthType(chunkOptions.charLengthType);
-      if (Object.prototype.hasOwnProperty.call(chunkOptions, 'textEncoder')) {
-        assertIsValidTextEncoder(chunkOptions.textEncoder);
-        textEncoderObject = chunkOptions.textEncoder;
+      if (chunkOptions.charLengthType === 'TextEncoder') {
+        if (Object.prototype.hasOwnProperty.call(chunkOptions, 'textEncoder')) {
+          assertIsValidTextEncoder(chunkOptions.textEncoder);
+          textEncoderObject = chunkOptions.textEncoder;
+        }
       }
     }
   }
