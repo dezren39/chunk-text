@@ -195,10 +195,11 @@ export default (text, chunkSize, chunkOptions) => {
     }
     if (Object.prototype.hasOwnProperty.call(chunkOptions, 'charLengthType')) {
       assertIsValidCharLengthType(chunkOptions.charLengthType);
-      if (Object.prototype.hasOwnProperty.call(chunkOptions, 'textEncoder')) {
-        assertIsValidTextEncoder(chunkOptions.textEncoder);
-        textEncoderObject = chunkOptions.textEncoder;
-      }
+      if (chunkOptions.charLengthType === 'TextEncoder') {
+        if (Object.prototype.hasOwnProperty.call(chunkOptions, 'textEncoder')) {
+          assertIsValidTextEncoder(chunkOptions.textEncoder);
+          textEncoderObject = chunkOptions.textEncoder;
+        }
     }
   }
   const charLengthMask = charLengthMaskIntParseIntNaN
