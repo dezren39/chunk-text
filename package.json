@@ -1,5 +1,5 @@
 {
-  "name": "chunk-text",
+  "name": "@dezren39/chunk-text",
   "version": "2.0.0",
   "description": "🔪 chunk/split a string by length without cutting/truncating words.",
   "type": "commonJs",
