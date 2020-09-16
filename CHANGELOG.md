@@ -1,3 +1,7 @@
+# [2.0.0](https://github.com/algolia/chunk-text/compare/v1.0.5...v2.0.0) (2020-09-16)
+
+
+
 <a name="2.0.0"></a>
 ## [2.0.0](https://github.com/algolia/chunk-text/compare/v1.0.5...v2.0.0) (2020-09-14)
 
