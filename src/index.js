@@ -119,8 +119,18 @@ const chunkLength = (
   return length;
 };
 
+const lastIndexOfSet = (text, set, upTo) =>
+  set
+    .map((item) => text.lastIndexOf(item, upTo))
+    .reduce((accumulator, currentValue) =>
+      accumulator > currentValue ? accumulator : currentValue
+    );
+
+const whitespace =
+  ' \n\t\r\f\v\xa0\u00a0\u2028\u2029\u1680\u2000\u200a\u202f\u205f\u3000\ufeff';
+
 const lastSpaceOrLength = (text, upTo) => {
-  let lastIndex = text.lastIndexOf(' ', upTo);
+  let lastIndex = lastIndexOfSet(text, whitespace, upTo);
   if (lastIndex === -1) {
     lastIndex = upTo;
   }
@@ -152,7 +162,7 @@ const chunkIndexOf = (
     splitAt = splitAt - 1;
   }
   splitAt = lastSpaceOrLength(characters, splitAt);
-  if ((splitAt > -2 && splitAt < 1) || characters[splitAt] === ' ') {
+  if ((splitAt > -2 && splitAt < 1) || whitespace.includes(characters[splitAt])) {
     splitAt = splitAt + 1;
   }
   if (
