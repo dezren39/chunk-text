@@ -94,23 +94,16 @@ const chunkLength = (
     ) {
       length = -1;
     } else if (charLengthMask === 0) {
-      length = charactersArray
-        .map(
-          (character) =>
-            (charLengthType === 'TextEncoder'
-              ? textEncoder.encode(character)
-              : character
-            ).length
-        )
-        .reduce((accumulator, currentValue) => accumulator + currentValue);
+      length =
+        charLengthType === 'TextEncoder'
+          ? textEncoder.encode(charactersArray).length
+          : charactersArray.length;
     } else if (charLengthMask > 0) {
       const arrayLength = charactersArray
-        .map(
-          (character) =>
-            (charLengthType === 'TextEncoder'
-              ? textEncoder.encode(character)
-              : character
-            ).length
+        .map((character) =>
+          charLengthType === 'TextEncoder'
+            ? textEncoder.encode(character).length
+            : character.length
         )
         .reduce(
           (accumulator, currentValue) =>
